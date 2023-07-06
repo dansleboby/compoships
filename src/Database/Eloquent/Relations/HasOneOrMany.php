@@ -9,6 +9,8 @@ use Illuminate\Database\Query\JoinClause;
 
 trait HasOneOrMany
 {
+    public string $mode = 'and';
+    
     /**
      * Set the base constraints on the relation query.
      *
@@ -24,16 +26,34 @@ trait HasOneOrMany
             if (is_array($this->foreignKey)) {
                 $allParentKeyValuesAreNull = array_unique($parentKeyValue) === [null];
 
-                foreach ($this->foreignKey as $index => $key) {
-                    $tmp = explode('.', $key);
-                    $key = end($tmp);
-                    $fullKey = $this->getRelated()
-                            ->getTable().'.'.$key;
-                    $this->query->where($fullKey, '=', $parentKeyValue[$index]);
+                if($this->mode === 'and') {
+                    foreach($this->foreignKey as $index => $key) {
+                        $tmp     = explode('.', $key);
+                        $key     = end($tmp);
+                        $fullKey = $this->getRelated()
+                                        ->getTable() . '.' . $key;
 
-                    if ($allParentKeyValuesAreNull) {
-                        $this->query->whereNotNull($fullKey);
+                        $this->query->where($fullKey, '=', $parentKeyValue[$index]);
+
+                        if($allParentKeyValuesAreNull) {
+                            $this->query->whereNotNull($fullKey);
+                        }
                     }
+                } else {
+                    $this->query->where(function($query) use ($parentKeyValue, $allParentKeyValuesAreNull) {
+                        foreach($this->foreignKey as $index => $key) {
+                            $tmp     = explode('.', $key);
+                            $key     = end($tmp);
+                            $fullKey = $this->getRelated()
+                                            ->getTable() . '.' . $key;
+
+                            $query->orWhere($fullKey, '=', $parentKeyValue[$index]);
+
+                            if($allParentKeyValuesAreNull) {
+                                $query->whereNotNull($fullKey);
+                            }
+                        }
+                    });
                 }
             } else {
                 parent::addConstraints();

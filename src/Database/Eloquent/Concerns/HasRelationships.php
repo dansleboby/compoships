@@ -110,8 +110,12 @@ trait HasRelationships
      *
      * @return \Awobaz\Compoships\Database\Eloquent\Relations\HasMany
      */
-    public function hasMany($related, $foreignKey = null, $localKey = null)
+    public function hasMany($related, $foreignKey = null, $localKey = null, $mode = 'and')
     {
+        if($mode != 'and' && $mode != 'or')
+            throw new \Exception('Invalid mode');
+        $this->mode = $mode;
+        
         if (is_array($foreignKey)) { //Check for multi-columns relationship
             $this->validateRelatedModel($related);
         }
@@ -145,9 +149,9 @@ trait HasRelationships
      *
      * @return \Awobaz\Compoships\Database\Eloquent\Relations\HasMany
      */
-    protected function newHasMany(Builder $query, Model $parent, $foreignKey, $localKey)
+    protected function newHasMany(Builder $query, Model $parent, $foreignKey, $localKey, $mode = 'and')
     {
-        return new HasMany($query, $parent, $foreignKey, $localKey);
+        return new HasMany($query, $parent, $foreignKey, $localKey, $mode);
     }
 
     /**

@@ -13,6 +13,11 @@ class HasMany extends BaseHasMany
 {
     use HasOneOrMany;
 
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $mode = 'and') {
+        $this->mode = $mode;
+        return parent::__construct($query, $parent, $foreignKey, $localKey);
+    }
+
     /**
      * Get the results of the relationship.
      *
