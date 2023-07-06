@@ -136,7 +136,7 @@ trait HasRelationships
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return $this->newHasMany($instance->newQuery(), $this, $foreignKeys ?: $foreignKey, $localKey);
+        return $this->newHasMany($instance->newQuery(), $this, $foreignKeys ?: $foreignKey, $localKey, $mode);
     }
 
     /**
