@@ -114,7 +114,6 @@ trait HasRelationships
     {
         if($mode != 'and' && $mode != 'or')
             throw new \Exception('Invalid mode');
-        $this->mode = $mode;
         
         if (is_array($foreignKey)) { //Check for multi-columns relationship
             $this->validateRelatedModel($related);
